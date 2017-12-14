@@ -1,4 +1,6 @@
-#define F_CPU 1000000UL // keep internal clock at 1 MHz, should be sufficient
+#include "Arduino.h"
+
+#include "main.h"
 
 #include <TinyWireM.h>          // required by TinyDS1307
 #include <USI_TWI_Master.h>     // using I2C via the chip's USI
@@ -8,26 +10,6 @@
 #include <PinChangeInterrupt.h> // using PCINTs instead of INTs
 #include <avr/io.h>             // direct port manipulation
 #include <util/delay.h>         // to have a substitute for delay()
-
-// Uncomment to initialize RTC after loss of power, etc.
-// (need to set time inside setup() first!)
-#define SET_RTC_TIME TRUE
-
-// pins
-#define SDA    0 /* PB0 or pin 5 */
-#define RELAY  1 /* PB1 or pin 6 */
-#define SCL    2 /* PB2 or pin 7 */
-#define BUTTON 3 /* PB3 or pin 2 */
-#define LED    4 /* PB4 or pin 3 */
-
-// abstractions
-#define UIV_ON HIGH
-#define UIV_OFF LOW
-#define INV_ON LOW
-#define INV_OFF HIGH
-
-// settings
-#define LED_BLINK_FREQ 750 /* milliseconds */
 
 // list of operating states
 enum opstates {
@@ -44,10 +26,10 @@ volatile enum opstates op_state = AUTO;
 
 void setup()
 {
-  // pinMode(RELAY, OUTPUT);
-  // pinMode(LED, OUTPUT);
-  // pinMode(BUTTON, INPUT);
-  DDRB = 0b00010010; // PB1 and PB4, pins 6 and 3
+  pinMode(RELAY, OUTPUT);
+  pinMode(LED, OUTPUT);
+  pinMode(BUTTON, INPUT);
+  // DDRB = 0b00010010; // PB1 and PB4, pins 6 and 3
   // (all zeroes are inputs by default)
 
   // the button doesn't sit on pin 7, which is the only one supporting INTn 
@@ -59,7 +41,7 @@ void setup()
 
 #ifdef SET_RTC_TIME
   if (!tinyrtc.isrunning()) // if the #define is set, we always want to adjust the time
-    tinyrtc.adjust(2017,11,11, 14,12,00);
+    tinyrtc.adjust(2017,12,15, 00,30,00);
 #endif
 }
 
@@ -138,6 +120,7 @@ void set_relay_state()
   
     // no more space left to include delay(),
     // but need some buffering for the button
-    _delay_ms(350 /* milliseconds */);
+    // _delay_ms(350 /* milliseconds */);
+    delay(350); // on an attiny85, there's enough room alright
   }
 }

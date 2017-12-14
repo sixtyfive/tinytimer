@@ -1,0 +1,3 @@
+[submodule "lib/TinyDS1307"]
+	path = lib/TinyDS1307
+	url = https://github.com/jeka-kiselyov/tinyds1307.git
