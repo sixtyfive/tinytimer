@@ -96,9 +96,9 @@ void parker_lewis_clock_check()
   // unsigned char the_hour = 22; // for debugging only
 
   switch (the_hour) {
-    case 0  ...  5 /* night      */: relay_state = INV_OFF ; break;
-    case 6  ...  9 /* morning    */: relay_state = INV_ON  ; break;
-    case 10 ... 16 /* noon break */: relay_state = INV_OFF ; break;
+    case 0  ...  9 /* night      */: relay_state = INV_OFF ; break;
+    case 10 ... 12 /* morning    */: relay_state = INV_ON  ; break;
+    case 13 ... 16 /* noon break */: relay_state = INV_OFF ; break;
     case 17 ... 23 /* evening    */: relay_state = INV_ON  ; break;
   }
 }
