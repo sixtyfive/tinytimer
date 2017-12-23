@@ -1,9 +1,9 @@
 #include "Arduino.h"
 
 #include "main.h"
-#ifdef DEBUG
-#include "printf.h"
-#endif
+// #ifdef DEBUG
+// #include "printf.h"
+// #endif
 
 #include <TinyWireM.h>          // required by TinyDS1307
 #include <USI_TWI_Master.h>     // using I2C via the chip's USI
@@ -47,9 +47,9 @@ void setup()
     tinyrtc.adjust(2017,12,23, 14,45,00);
 #endif
 
-#ifdef DEBUG
-  Serial.begin();
-#endif
+// #ifdef DEBUG
+//   Serial.begin();
+// #endif
 }
 
 void loop()
@@ -62,7 +62,7 @@ void cycle_opstate()
 {  
   // go from AUTO to ON to OFF to AUTO, and so forth...
   if (op_state < AUTO) {
-    op_state = op_state + 1; // can't opstate++ - it's an enum!
+    op_state = op_state + 1; // can't opstate++ - it's an enum! this here is fishy, too, but works with -fpermissive.
   } else {
     op_state = OFF;
   }
@@ -111,11 +111,11 @@ void parker_lewis_clock_check()
     relay_state = INV_OFF ; break;
   }
 
-#ifdef DEBUG
-  Serial.printf("%04d-%02d-%02d %02d:%02d",
-    tinyrtc.year(), tinyrtc.month(), tinyrtc.day(),
-    the_hour, tinyrtc.minute());
-#endif
+// #ifdef DEBUG
+//   Serial.printf("%04d-%02d-%02d %02d:%02d",
+//     tinyrtc.year(), tinyrtc.month(), tinyrtc.day(),
+//     the_hour, tinyrtc.minute());
+// #endif
 }
 
 void set_relay_state()
