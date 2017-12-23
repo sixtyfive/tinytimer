@@ -1,6 +1,9 @@
 #include "Arduino.h"
 
 #include "main.h"
+#ifdef DEBUG
+#include "printf.h"
+#endif
 
 #include <TinyWireM.h>          // required by TinyDS1307
 #include <USI_TWI_Master.h>     // using I2C via the chip's USI
@@ -40,8 +43,12 @@ void setup()
   tinyrtc.begin();
 
 #ifdef SET_RTC_TIME
-  if (!tinyrtc.isrunning()) // if the #define is set, we always want to adjust the time
-    tinyrtc.adjust(2017,12,15, 00,30,00);
+  // if (!tinyrtc.isrunning()) // outcommented since if the #define is set, we always want to adjust the time
+    tinyrtc.adjust(2017,12,23, 14,45,00);
+#endif
+
+#ifdef DEBUG
+  Serial.begin();
 #endif
 }
 
@@ -96,11 +103,19 @@ void parker_lewis_clock_check()
   // unsigned char the_hour = 22; // for debugging only
 
   switch (the_hour) {
-    case 0  ...  9 /* night      */: relay_state = INV_OFF ; break;
-    case 10 ... 12 /* morning    */: relay_state = INV_ON  ; break;
-    case 13 ... 16 /* noon break */: relay_state = INV_OFF ; break;
-    case 17 ... 23 /* evening    */: relay_state = INV_ON  ; break;
+    case  6 ... (12-1): // forenoon
+    case 16 ... (23-1): // afternoon
+    relay_state = INV_ON  ; break;
+
+    default:
+    relay_state = INV_OFF ; break;
   }
+
+#ifdef DEBUG
+  Serial.printf("%04d-%02d-%02d %02d:%02d",
+    tinyrtc.year(), tinyrtc.month(), tinyrtc.day(),
+    the_hour, tinyrtc.minute());
+#endif
 }
 
 void set_relay_state()
