@@ -38,18 +38,19 @@ void setup()
   // the button doesn't sit on pin 7, which is the only one supporting INTn 
   // style interrupts. pin 2 is PCINTn style, so can't use attachInterrupt().
   attachPCINT(digitalPinToPinChangeInterrupt(BUTTON), cycle_opstate, RISING);
-  
-  TinyWireM.begin();
-  tinyrtc.begin();
 
-#ifdef SET_RTC_TIME
-  // if (!tinyrtc.isrunning()) // outcommented since if the #define is set, we always want to adjust the time
-    tinyrtc.adjust(2017,12,23, 14,45,00);
-#endif
-
+#ifdef DEBUG
 // #ifdef DEBUG
 //   Serial.begin();
 // #endif
+#else
+  TinyWireM.begin();
+  tinyrtc.begin();
+#ifdef SET_RTC_TIME
+  // if (!tinyrtc.isrunning()) // outcommented since if the #define is set, we always want to adjust the time
+    tinyrtc.adjust(2017,12,23, 15,30,00);
+#endif
+#endif
 }
 
 void loop()
@@ -99,8 +100,11 @@ void set_led_state()
 void parker_lewis_clock_check()
 {
   tinyrtc.read();
+#ifdef DEBUG
+  unsigned char the_hour = 15;
+#else
   unsigned char the_hour = tinyrtc.hour(); // char is smaller than int and sufficient for a 0-23 value
-  // unsigned char the_hour = 22; // for debugging only
+#endif
 
   switch (the_hour) {
     case  6 ... (12-1): // forenoon
