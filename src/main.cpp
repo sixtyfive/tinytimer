@@ -48,7 +48,7 @@ void setup()
   tinyrtc.begin();
 #ifdef SET_RTC_TIME
   // if (!tinyrtc.isrunning()) // outcommented since if the #define is set, we always want to adjust the time
-    tinyrtc.adjust(2017,12,23, 15,30,00);
+    tinyrtc.adjust(2017,12,30, 21,05,00);
 #endif
 #endif
 }

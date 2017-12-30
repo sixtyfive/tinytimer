@@ -5,7 +5,8 @@
 
 // uncomment to initialize RTC after loss of power, etc.
 // (need to set time inside setup() first!)
-#define SET_RTC_TIME FALSE
+#undef SET_RTC_TIME
+//#define SET_RTC_TIME FALSE
 
 // pins
 #define SDA    0 /* PB0 or pin 5 */
