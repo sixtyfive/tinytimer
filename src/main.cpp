@@ -62,6 +62,12 @@ void cycle_opstate()
   // ensure a bit of a nicer transition
   led_state = UIV_OFF;
   led_blink_moment = millis();
+  
+  // prevent button from being pressed again too quickly (relay recovery time)
+  // 
+  // if no more space left to include delay() on attiny25:
+  // _delay_ms(350 /* milliseconds */);
+  delay(250); // on an attiny85, there's enough room alright
 }
 
 void blink_led()
@@ -96,7 +102,9 @@ void parker_lewis_clock_check()
   unsigned char the_second = tinyrtc.second();
 
   if (the_second % 5 == 0) {
-    relay_state = !relay_state;
+    relay_state = INV_ON;
+  } else if (the_second % 10 == 0) {
+    relay_state = INV_OFF;
   }
 #else
   unsigned char the_hour = tinyrtc.hour(); // char is smaller than int and sufficient for a 0-23 value
@@ -127,10 +135,5 @@ void set_relay_state()
   // if (relay_state != (PINB & 1 << PB1)) {
     digitalWrite(RELAY, relay_state);
     // PORTB = (relay_state << PB1);
-  
-    // no more space left to include delay(),
-    // but need some buffering for the button
-    // _delay_ms(350 /* milliseconds */);
-    delay(500); // on an attiny85, there's enough room alright
   }
 }
