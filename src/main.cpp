@@ -1,9 +1,6 @@
 #include "Arduino.h"
 
 #include "main.h"
-// #ifdef DEBUG
-// #include "printf.h"
-// #endif
 
 #include <TinyWireM.h>          // required by TinyDS1307
 #include <USI_TWI_Master.h>     // using I2C via the chip's USI
@@ -12,7 +9,7 @@
                                 // grows the sketch beyond bounds!
 #include <PinChangeInterrupt.h> // using PCINTs instead of INTs
 #include <avr/io.h>             // direct port manipulation
-#include <util/delay.h>         // to have a substitute for delay()
+// #include <util/delay.h>      // to have a substitute for delay() - not needed on attiny85
 
 // list of operating states
 enum opstates {
@@ -39,17 +36,11 @@ void setup()
   // style interrupts. pin 2 is PCINTn style, so can't use attachInterrupt().
   attachPCINT(digitalPinToPinChangeInterrupt(BUTTON), cycle_opstate, RISING);
 
-#ifdef DEBUG
-// #ifdef DEBUG
-//   Serial.begin();
-// #endif
-#else
   TinyWireM.begin();
   tinyrtc.begin();
 #ifdef SET_RTC_TIME
   // if (!tinyrtc.isrunning()) // outcommented since if the #define is set, we always want to adjust the time
-    tinyrtc.adjust(2017,12,30, 21,05,00);
-#endif
+  tinyrtc.adjust(2018,1,31, 0,3,6);
 #endif
 }
 
@@ -100,26 +91,26 @@ void set_led_state()
 void parker_lewis_clock_check()
 {
   tinyrtc.read();
+
 #ifdef DEBUG
-  unsigned char the_hour = 15;
+  unsigned char the_second = tinyrtc.second();
+
+  if (the_second % 5 == 0) {
+    relay_state = !relay_state;
+  }
 #else
   unsigned char the_hour = tinyrtc.hour(); // char is smaller than int and sufficient for a 0-23 value
-#endif
 
   switch (the_hour) {
-    case  6 ... (12-1): // forenoon
-    case 16 ... (23-1): // afternoon
-    relay_state = INV_ON  ; break;
+    case  8 ... 13 : relay_state = INV_ON  ; break; //  8 - 14 o'clock
+    case 14 ... 17 : relay_state = INV_OFF ; break; // 14 - 18 o'clock
+    case 18 ... 23 : relay_state = INV_ON  ; break; // 18 - 24 o'clock
+    case  0 ...  7 : relay_state = INV_OFF ; break; //  0 -  8 o'clock
 
     default:
     relay_state = INV_OFF ; break;
   }
-
-// #ifdef DEBUG
-//   Serial.printf("%04d-%02d-%02d %02d:%02d",
-//     tinyrtc.year(), tinyrtc.month(), tinyrtc.day(),
-//     the_hour, tinyrtc.minute());
-// #endif
+#endif
 }
 
 void set_relay_state()
@@ -140,6 +131,6 @@ void set_relay_state()
     // no more space left to include delay(),
     // but need some buffering for the button
     // _delay_ms(350 /* milliseconds */);
-    delay(350); // on an attiny85, there's enough room alright
+    delay(500); // on an attiny85, there's enough room alright
   }
 }

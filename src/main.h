@@ -1,12 +1,9 @@
-// #define F_CPU 1000000UL // keep internal clock at 1 MHz, should be sufficient
-
-// uncomment to enable serial output
-#define DEBUG FALSE
+#define DEBUG TRUE
 
 // uncomment to initialize RTC after loss of power, etc.
 // (need to set time inside setup() first!)
-#undef SET_RTC_TIME
-//#define SET_RTC_TIME FALSE
+
+// #define SET_RTC_TIME TRUE
 
 // pins
 #define SDA    0 /* PB0 or pin 5 */
